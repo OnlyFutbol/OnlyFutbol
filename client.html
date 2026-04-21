@@ -7,7 +7,6 @@
 <title>Only Futbol</title>
 
 <style>
-
 body{
 font-family: Arial, Helvetica, sans-serif;
 background:#0f172a;
@@ -25,8 +24,8 @@ gap:10px;
 }
 
 .header img{
-width:40px;
-height:40px;
+width:60px;
+height:auto;
 }
 
 h1{
@@ -94,7 +93,6 @@ font-size:14px;
 margin-top:40px;
 color:#94a3b8;
 }
-
 </style>
 </head>
 
@@ -117,86 +115,111 @@ color:#94a3b8;
 
 <script>
 
-// 🔥 OBTENER SHEET ID DESDE URL
+// 🔥 obtener ID desde URL
 const params = new URLSearchParams(window.location.search)
 const sheetId = params.get("sheet")
 
-if(!sheetId){
-document.getElementById("loading").innerText = "Error: falta el ID del grupo"
-throw new Error("No sheet ID")
-}
-
-// 🔥 URL DINÁMICA
-const sheetURL = `https://docs.google.com/spreadsheets/d/${1fHu6L7hIV85BSEjdYdfDe4IkzzJgGptThR4HUzS5UgM}/gviz/tq?tqx=out:csv&sheet=Participaciones`
-
-const res = await fetch(sheetURL)
-const csv = await res.text()
-
-let filas = csv.trim().split(/\r?\n/).map(f =>
-f.split(",").map(c => c.replace(/"/g,""))
-)
-
-// solo primeras 6 columnas
-filas = filas.map(f => f.slice(0,6))
-
-const headers = filas.shift()
-
-// ordenar por compromiso (columna 6)
-filas.sort((a,b)=>Number(b[5]) - Number(a[5]))
-
+const loading = document.getElementById("loading")
 const tabla = document.getElementById("tabla")
 
-let headerHTML = "<tr><th>#</th>"
-
-headers.forEach(h=>{
-headerHTML += `<th>${h}</th>`
-})
-
-headerHTML += "</tr>"
-
-tabla.innerHTML = headerHTML
-
-filas.forEach((fila,i)=>{
-
-let tr = "<tr>"
-
-tr += `<td class="rank">${i+1}</td>`
-
-fila.forEach((celda,index)=>{
-
-let clase = ""
-
-if(index === 1) clase = "verde"     // Asistencias
-if(index === 2) clase = "rojo"      // Bajas
-if(index === 3) clase = "naranja"   // Retrasos
-
-if(index === 5){
-const valor = Number(celda)
-clase = valor >= 0 ? "verde" : "rojo"
+if(!sheetId){
+  loading.innerText = "Error: falta el ID del grupo"
+  throw new Error("No sheet ID")
 }
 
-tr += `<td class="${clase}">${celda}</td>`
+// ⚠️ CAMBIAR "Participaciones" si tu hoja tiene otro nombre
+const SHEET_NAME = "Participaciones"
 
-})
+// 🔥 URLs fallback
+const urls = [
+  `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv`,
+  `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${SHEET_NAME}`
+]
 
-tr += "</tr>"
-
-tabla.innerHTML += tr
-
-})
-
-// mostrar tabla
-document.getElementById("loading").style.display = "none"
-tabla.style.display = "table"
-
-}catch(err){
-
-document.getElementById("loading").innerText = "Error cargando datos"
-
-console.error(err)
-
+// 🔥 fetch robusto
+async function fetchCSV(){
+  for (const url of urls){
+    try{
+      const res = await fetch(url)
+      if(!res.ok) continue
+      const text = await res.text()
+      if(text && text.includes(",")) return text
+    }catch(e){
+      console.warn("falló:", url)
+    }
+  }
+  throw new Error("No se pudo obtener el CSV (revisar permisos o nombre de hoja)")
 }
 
+// 🔥 parser robusto
+function parseCSV(csv){
+  return csv
+    .trim()
+    .split(/\r?\n/)
+    .map(line =>
+      line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/)
+          .map(c => c.replace(/^"|"$/g,""))
+    )
+}
+
+// 🔥 render
+async function cargarTabla(){
+  try{
+
+    const csv = await fetchCSV()
+    let filas = parseCSV(csv)
+
+    if(filas.length < 2){
+      throw new Error("El sheet está vacío")
+    }
+
+    filas = filas.map(f => f.slice(0,6))
+
+    const headers = filas.shift()
+
+    filas.sort((a,b)=>Number(b[5]) - Number(a[5]))
+
+    let headerHTML = "<tr><th>#</th>"
+
+    headers.forEach(h=>{
+      headerHTML += `<th>${h}</th>`
+    })
+
+    headerHTML += "</tr>"
+    tabla.innerHTML = headerHTML
+
+    filas.forEach((fila,i)=>{
+
+      let tr = "<tr>"
+      tr += `<td class="rank">${i+1}</td>`
+
+      fila.forEach((celda,index)=>{
+
+        let clase = ""
+
+        if(index === 1) clase = "verde"
+        if(index === 2) clase = "rojo"
+        if(index === 3) clase = "naranja"
+
+        if(index === 5){
+          const valor = Number(celda)
+          clase = valor >= 0 ? "verde" : "rojo"
+        }
+
+        tr += `<td class="${clase}">${celda}</td>`
+      })
+
+      tr += "</tr>"
+      tabla.innerHTML += tr
+    })
+
+    loading.style.display = "none"
+    tabla.style.display = "table"
+
+  }catch(err){
+    console.error(err)
+    loading.innerText = "Error: " + err.message
+  }
 }
 
 cargarTabla()
