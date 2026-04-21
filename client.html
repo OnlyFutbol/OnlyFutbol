@@ -127,16 +127,12 @@ throw new Error("No sheet ID")
 }
 
 // 🔥 URL DINÁMICA
-const sheetURL = `const sheetURL = `https://docs.google.com/spreadsheets/d/${1fHu6L7hIV85BSEjdYdfDe4IkzzJgGptThR4HUzS5UgM}/gviz/tq?tqx=out:csv&sheet=Participaciones`
-
-async function cargarTabla(){
-
-try{
+const sheetURL = `https://docs.google.com/spreadsheets/d/${1fHu6L7hIV85BSEjdYdfDe4IkzzJgGptThR4HUzS5UgM}/gviz/tq?tqx=out:csv&sheet=Participaciones`
 
 const res = await fetch(sheetURL)
 const csv = await res.text()
 
-let filas = csv.trim().split("\n").map(f =>
+let filas = csv.trim().split(/\r?\n/).map(f =>
 f.split(",").map(c => c.replace(/"/g,""))
 )
 
