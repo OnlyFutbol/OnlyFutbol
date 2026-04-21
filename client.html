@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Only Futbol</title>
+
+<style>
+
+body{
+font-family: Arial, Helvetica, sans-serif;
+background:#0f172a;
+color:white;
+margin:0;
+padding:40px;
+text-align:center;
+}
+
+.header{
+display:flex;
+align-items:center;
+justify-content:center;
+gap:10px;
+}
+
+.header img{
+width:40px;
+height:40px;
+}
+
+h1{
+font-size:42px;
+margin:0;
+}
+
+.subtitle{
+color:#94a3b8;
+margin-bottom:40px;
+}
+
+table{
+margin:auto;
+border-collapse:collapse;
+background:#1e293b;
+border-radius:10px;
+overflow:hidden;
+min-width:700px;
+}
+
+th{
+background:#111827;
+padding:14px;
+font-size:14px;
+letter-spacing:1px;
+}
+
+td{
+padding:12px;
+border-bottom:1px solid #334155;
+}
+
+tr:hover{
+background:#334155;
+}
+
+.rank{
+color:#facc15;
+font-weight:bold;
+}
+
+.rojo{
+color:#ef4444;
+font-weight:bold;
+}
+
+.naranja{
+color:#f97316;
+font-weight:bold;
+}
+
+.verde{
+color:#22c55e;
+font-weight:bold;
+}
+
+.footer{
+margin-top:40px;
+color:#64748b;
+font-size:14px;
+}
+
+.loading{
+margin-top:40px;
+color:#94a3b8;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <img src="/logo.png" alt="logo">
+  <h1>Only Futbol</h1>
+</div>
+
+<div class="subtitle">Ranking de compromiso del grupo</div>
+
+<div id="loading" class="loading">Cargando ranking...</div>
+
+<table id="tabla" style="display:none;"></table>
+
+<div class="footer">
+© 2026 Only Futbol — Todos los derechos reservados
+</div>
+
+<script>
+
+// 🔥 OBTENER SHEET ID DESDE URL
+const params = new URLSearchParams(window.location.search)
+const sheetId = params.get("sheet")
+
+if(!sheetId){
+document.getElementById("loading").innerText = "Error: falta el ID del grupo"
+throw new Error("No sheet ID")
+}
+
+// 🔥 URL DINÁMICA
+const sheetURL = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv`
+
+async function cargarTabla(){
+
+try{
+
+const res = await fetch(sheetURL)
+const csv = await res.text()
+
+let filas = csv.trim().split("\n").map(f =>
+f.split(",").map(c => c.replace(/"/g,""))
+)
+
+// solo primeras 6 columnas
+filas = filas.map(f => f.slice(0,6))
+
+const headers = filas.shift()
+
+// ordenar por compromiso (columna 6)
+filas.sort((a,b)=>Number(b[5]) - Number(a[5]))
+
+const tabla = document.getElementById("tabla")
+
+let headerHTML = "<tr><th>#</th>"
+
+headers.forEach(h=>{
+headerHTML += `<th>${h}</th>`
+})
+
+headerHTML += "</tr>"
+
+tabla.innerHTML = headerHTML
+
+filas.forEach((fila,i)=>{
+
+let tr = "<tr>"
+
+tr += `<td class="rank">${i+1}</td>`
+
+fila.forEach((celda,index)=>{
+
+let clase = ""
+
+if(index === 1) clase = "verde"     // Asistencias
+if(index === 2) clase = "rojo"      // Bajas
+if(index === 3) clase = "naranja"   // Retrasos
+
+if(index === 5){
+const valor = Number(celda)
+clase = valor >= 0 ? "verde" : "rojo"
+}
+
+tr += `<td class="${clase}">${celda}</td>`
+
+})
+
+tr += "</tr>"
+
+tabla.innerHTML += tr
+
+})
+
+// mostrar tabla
+document.getElementById("loading").style.display = "none"
+tabla.style.display = "table"
+
+}catch(err){
+
+document.getElementById("loading").innerText = "Error cargando datos"
+
+console.error(err)
+
+}
+
+}
+
+cargarTabla()
+
+</script>
+
+</body>
+</html>

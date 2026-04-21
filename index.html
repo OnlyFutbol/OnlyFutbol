@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <title>OnlyFutbol</title>
+
+  <!-- FAVICONS (logo en la pestaña) -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/logo-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/logo-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/logo-180.png">
+
+  <!-- SEO básico -->
+  <meta name="description" content="Sistema para organizar grupos de fútbol con ranking de compromiso. Menos faltazos, más orden.">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0b0b0b;
+      color: white;
+      text-align: center;
+    }
+
+    .container {
+      padding: 40px 20px;
+      max-width: 800px;
+      margin: auto;
+    }
+
+    .title {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .title img {
+      width: 40px;
+      height: 40px;
+    }
+
+    h1 {
+      font-size: 42px;
+      margin: 0;
+    }
+
+    .green {
+      color: #00ff88;
+    }
+
+    p {
+      font-size: 18px;
+      color: #ccc;
+    }
+
+    .buttons {
+      margin-top: 30px;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 15px 25px;
+      margin: 10px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: 0.2s;
+      background: #00ff88;
+      color: black;
+    }
+
+    .btn:hover {
+      background: #00cc6a;
+    }
+
+    .card {
+      background: #111;
+      padding: 20px;
+      border-radius: 12px;
+      margin-top: 30px;
+    }
+
+    .steps {
+      text-align: left;
+      margin-top: 20px;
+    }
+
+    .steps div {
+      margin: 10px 0;
+    }
+
+    img.demo {
+      width: 100%;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+
+    footer {
+      margin-top: 40px;
+      font-size: 14px;
+      color: #777;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <!-- LOGO + TITULO -->
+    <div class="title">
+      <img src="/logo.png" alt="OnlyFutbol logo">
+      <h1>Only<span class="green">Futbol</span></h1>
+    </div>
+
+    <p>
+      Menos faltazos. Más compromiso en tu grupo.
+    </p>
+
+    <!-- BOTON UNICO -->
+    <div class="buttons">
+      <a href="https://www.instagram.com/onlyfutbol.app" target="_blank" class="btn">
+        📩 Escribime por Instagram
+      </a>
+    </div>
+
+    <div class="card">
+      <h2>¿Qué es?</h2>
+      <p>
+        Un sistema simple que crea un ranking de compromiso para tu grupo de fútbol.
+        Evita cancelaciones, retrasos y desorden.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>¿Cómo funciona?</h2>
+
+      <div class="steps">
+        <div>1️⃣ Agregamos tus jugadores</div>
+        <div>2️⃣ Se registra asistencia y comportamiento</div>
+        <div>3️⃣ Se genera ranking automático</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Ejemplo real</h2>
+
+      <img src="/Ejemplo.png" alt="Ejemplo sistema" class="demo">
+    </div>
+
+    <div class="card">
+      <h2>Precio</h2>
+      <p>
+        Pago único: ARS 15.000<br>
+        Mantenimiento: ARS 2.500/mes
+      </p>
+    </div>
+
+    <footer>
+      OnlyFutbol © 2026
+    </footer>
+
+  </div>
+
+</body>
+</html>
