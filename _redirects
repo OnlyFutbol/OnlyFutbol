@@ -1,1 +1,1 @@
-/team/:sheet  /client.html?sheet=:sheet  200
+/client/:sheet   /client.html?sheet=:sheet   200
