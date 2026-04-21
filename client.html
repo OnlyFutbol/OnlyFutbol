@@ -115,9 +115,18 @@ color:#94a3b8;
 
 <script>
 
-// 🔥 obtener ID desde URL
+// 🔥 obtener ID desde URL (query o path)
 const params = new URLSearchParams(window.location.search)
-const sheetId = params.get("sheet")
+let sheetId = params.get("sheet")
+
+// fallback: tomar desde la ruta /client/ID
+if(!sheetId){
+  const pathParts = window.location.pathname.split("/")
+  // ['', 'client', 'ID']
+  if(pathParts[1] === "client" && pathParts[2]){
+    sheetId = pathParts[2]
+  }
+}
 
 const loading = document.getElementById("loading")
 const tabla = document.getElementById("tabla")
@@ -128,7 +137,7 @@ if(!sheetId){
 }
 
 // ⚠️ CAMBIAR "Participaciones" si tu hoja tiene otro nombre
-const SHEET_NAME = "Participaciones"
+const SHEET_NAME = "Hoja 1"
 
 // 🔥 URLs fallback
 const urls = [
